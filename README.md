@@ -13,17 +13,16 @@ This project is build using Angular framework backed by `flask` engine , leverag
 
 Supported Operating System - Windows , Linux , OSX
 
-###Prerequisite
+### Prerequisite
+1. [NPM](https://phoenixnap.com/kb/install-node-js-npm-on-windows)
+2. [Angular CLI](https://www.npmjs.com/package/@angular/cli)
+3. [Python3](https://www.python.org/downloads/)
+4. Install modules for python flask_cors , flask , flask_restful , pandas , json. Do pip install `module_name`.
 
-1.[NPM](https://phoenixnap.com/kb/install-node-js-npm-on-windows)
-2.[Angular CLI](https://www.npmjs.com/package/@angular/cli) 
-3.[Python3](https://www.python.org/downloads/)
-4.Install modules for python flask_cors , flask , flask_restful , pandas , json. Do pip install `module_name`.
-
-
-1.Run `python service.py` in backend folder to start the backend service. Service now runs on port 5000.
-2.Run `ng serve` in project folder for starting dev server. Service now runs on port 4200.
-3.On local browser , navigate to `http://localhost:4200/`.
+### To Run
+1. Run `python service.py` in backend folder to start the backend service. Service now runs on port 5000.
+2. Run `ng serve` in project folder for starting dev server. Service now runs on port 4200.
+3. On local browser , navigate to `http://localhost:4200/`.
 
 # Information about project
 
