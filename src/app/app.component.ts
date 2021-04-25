@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Chart } from 'chart.js';
+import { formdata } from './model/data.model';
 
 @Component({
   selector: 'app-graph',
@@ -11,7 +12,7 @@ export class AppComponent implements OnInit {
   countryList: string[] = ['a' , 'b'];
   private gasData;
   private gasList;
-  private formdata: any = {};
+  private formdata: formdata = {country : 'Australia' , gas: 'CO2'};
   @ViewChild('canvas' , {static: false}) canvas: ElementRef;
   chart = [];
   constructor(private http: HttpClient) {}
@@ -30,8 +31,7 @@ export class AppComponent implements OnInit {
   }
 
   onSubmit() {
-    const headers = { country: 'Australia' , 'Access-Control-Allow-Origin': '*' , responseType: 'json'};
-    this.http.post('http://127.0.0.1:5000/gasData' , {'country': this.formdata.country} , {headers} )
+    this.http.post('http://127.0.0.1:5000/gasData' , {'country': this.formdata.country} )
     .subscribe(
         data => {
            this.gasData = data;
@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
                   }
                 });
             } else {
-              alert('gas values are not in database');
+              alert('gas values are not in database.Please choose another gas');
             }
     });
   }
