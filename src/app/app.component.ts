@@ -9,75 +9,70 @@ import { formdata } from './model/data.model';
   styleUrls: [ './app.component.scss' ]
 })
 export class AppComponent implements OnInit {
-  countryList: string[] = ['a' , 'b'];
-  private gasData;
-  private gasList;
-  private formdata: formdata = {country : 'Australia' , gas: 'CO2'};
+  countryList: string[] = [];
+  gasList = ['CO2', 'GHG(Indirect CO2)', 'GHG', 'HFC', 'CH4', 'NF3', 'N2O', 'PFC', 'SF6', 'HFC+PFC'];
+  formdata: formdata = {country : 'Australia' , gas: 'CO2'};
   @ViewChild('canvas' , {static: false}) canvas: ElementRef;
   chart = [];
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    const headers = { country: 'Australia' , 'Access-Control-Allow-Origin': '*' , responseType: 'json'};
-    this.http.get('http://127.0.0.1:5000/countries').subscribe(data => {
-      this.countryList = data['countryList'];
-      this.http.post('http://127.0.0.1:5000/gasData' , {'country' : this.countryList[0]} , {headers} )
-      .subscribe(
+    this.http.get('assets/country.csv', {responseType: 'text'})
+    .subscribe(
         data => {
-           this.gasData = data;
-           this.gasList = Object.keys(data);
-       });
-    });
+            const csvToRowArray = data.split('\n');
+            for (const country of csvToRowArray) {
+              this.countryList.push(country.trim());
+            }
+        }
+    );
   }
 
   onSubmit() {
-    this.http.post('http://127.0.0.1:5000/gasData' , {'country': this.formdata.country} )
+    this.http.get('assets/output.csv', {responseType: 'text'})
     .subscribe(
         data => {
-           this.gasData = data;
-           this.gasList = Object.keys(data);
-           if (this.gasData.hasOwnProperty(this.formdata.gas)) {
-              const graphData = this.processData(this.formdata.gas);
-              this.chart = new Chart(this.canvas.nativeElement.getContext('2d'), {
-                  type: 'line',
-                  data: {
-                    labels: graphData.keys,
-                    datasets: [
-                      {
-                        data: graphData.value,
-                        borderColor: '#3cba9f',
-                        fill: false
-                      }
-                    ]
-                  },
-                  options: {
-                    legend: {
-                      display: false
-                    },
-                    scales: {
-                      xAxes: [{
-                        display: true
-                      }],
-                      yAxes: [{
-                        display: true
-                      }],
-                    }
-                  }
-                });
-            } else {
-              alert('gas values are not in database.Please choose another gas');
+            const gasValue = [];
+            const yearLabel = [];
+            const gasIndex = this.gasList.indexOf(this.formdata.gas) + 2;
+            const csvToRowArray = data.split('\n').filter( (value) => value.includes(this.formdata.country));
+            for (let index = 0; index < csvToRowArray.length - 1; index++) {
+              const row = csvToRowArray[index].split(',');
+              gasValue.push(row[gasIndex].trim());
+              yearLabel.push(row[1]);
             }
-    });
-  }
-
-  private processData(gas) {
-    const obj  = this.gasData[gas];
-    const keys = Object.keys(obj);
-    const value = [];
-    for (const key of keys) {
-      value.push(this.gasData[gas][key]);
-    }
-    return {value , keys};
+            if (!gasValue.includes('null')){
+              this.chart = new Chart(this.canvas.nativeElement.getContext('2d'), {
+                type: 'line',
+                data: {
+                  labels: yearLabel,
+                  datasets: [
+                    {
+                      data: gasValue,
+                      borderColor: '#3cba9f',
+                      fill: false
+                    }
+                  ]
+                },
+                options: {
+                  legend: {
+                    display: false
+                  },
+                  scales: {
+                    xAxes: [{
+                      display: true
+                    }],
+                    yAxes: [{
+                      display: true
+                    }],
+                  }
+                }
+              });
+            } else {
+              alert('Data not present for this gas , please select another gas');
+            }
+        }
+    );
   }
 
 }

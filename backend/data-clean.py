@@ -10,6 +10,14 @@ DATASET = 'greenhouse_gas_inventory_data_data.csv'
 
 df = pd.read_csv(DATASET)
 
+countryList = list(df[COUNTRY_OR_AREA].unique())
+
+f = open('country.csv' , 'w')
+
+for i in countryList:
+    f.write(i + '\n')
+f.close()
+
 #print all the distinct categories
 categoryArr = list(df[CATEGORY].unique())
 
